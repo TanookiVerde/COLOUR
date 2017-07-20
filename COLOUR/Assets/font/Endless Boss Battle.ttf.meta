@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e5d95772420b6f349a96eb0f54977f03
+timeCreated: 1500510390
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Endless Boss Battle
+  fontNames:
+  - Endless Boss Battle
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

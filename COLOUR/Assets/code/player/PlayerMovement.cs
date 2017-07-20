@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour {
 	
 
 	[Header("Jump Properties")]
+	[SerializeField] private AudioClip _jumpAudio;
 	[SerializeField] private float _circleCastRadius;
 	[SerializeField] public Transform floorDetection;
 	[SerializeField] private Transform _ceilingDetection;
@@ -61,6 +62,8 @@ public class PlayerMovement : MonoBehaviour {
 		{
 			_myRB2D.AddForce(Vector2.up * _jumpMinForce);
 			AnimSetBool("jumping", true);
+			GetComponent<AudioSource>().clip = _jumpAudio;
+			GetComponent<AudioSource>().Play();
 			_jumped = true;
 			_jumpStartTime = Time.time;
 		}
@@ -105,6 +108,7 @@ public class PlayerMovement : MonoBehaviour {
 			_myRB2D.gravityScale = 0;
 			_myRB2D.constraints = RigidbodyConstraints2D.FreezePositionX;
 			AnimSetBool("climbing", true);
+			AnimSetBool("moving", false);
 		}
 	}
 	public void SetClimbing(bool value){

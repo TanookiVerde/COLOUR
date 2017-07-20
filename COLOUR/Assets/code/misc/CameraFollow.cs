@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour {
 	[SerializeField] private Transform _player;
 
 	private float _yOffset;
-	private Vector2 _startPos; 
+	private Vector3 _startPos; 
 	private bool _follow = false;
 
 	void Start()
@@ -25,6 +25,7 @@ public class CameraFollow : MonoBehaviour {
 		else if (_player.position.y <= _startPos.y)
 		{
 			_follow = false;
+			transform.position = _startPos;
 			return;
 		}
 

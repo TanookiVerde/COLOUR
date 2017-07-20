@@ -12,6 +12,7 @@ public class MirrorMovement : MonoBehaviour {
 	}
 
 	void Update () {
-		transform.position = _player.transform.position + new Vector3(_offset, 0);
+		transform.position = _player.position + new Vector3(_offset, 0);
+		transform.localScale =_player.localScale;
 	}
 }

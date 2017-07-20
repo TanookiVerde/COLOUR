@@ -10,31 +10,38 @@ public class PlayerMovement : MonoBehaviour {
 
 	[Header("Movement Properties")]
 	[SerializeField] private float _walkingVelocity;
-	[SerializeField] private float _jumpMaxHeight;
-	[SerializeField] private float _jumpMinForce;
-	[SerializeField] private float _jumpForceIncrement;
 	[SerializeField] private float _mass;
 	[SerializeField] private float _gravityScale;
-	[Range(.1f,1)]
-	[SerializeField] private float _circleCastRadius;
-	[SerializeField] private Transform _floorDetection;
-	[SerializeField] private Transform _ceilingDetection;
-	[SerializeField] private bool _jumpHeadHit;
 	[SerializeField] private bool _facingRight;
-	[SerializeField] private float _jumpThreshold;
+	
 
+	[Header("Jump Properties")]
+	[SerializeField] private float _circleCastRadius;
+	[SerializeField] public Transform floorDetection;
+	[SerializeField] private Transform _ceilingDetection;
+	[SerializeField] private float _jumpThreshold;
+	[SerializeField] private bool _jumpHeadHit;
+	[SerializeField] private float _jumpMinForce;
+	[SerializeField] private float _jumpForceIncrement;
+	
 	private Rigidbody2D _myRB2D;
 	private Animator _myAnimator;
 	private SpriteRenderer _mySR;
 	private bool _jumped = false;
 	private float _jumpStartTime;
 	public bool climbing;
+	
+	public delegate void AnimationChange<T>(string name, T value);
+ 	public event AnimationChange<float> AnimSetFloat;
+ 	public event AnimationChange<bool> AnimSetBool;
 
 	private void Start(){
 		GetAnimator();
 		GetSpriteRenderer();
 		InitializePhysicsProperties();
 		StartCoroutine( AppearInStage() );
+		AnimSetBool += _myAnimator.SetBool;
+		AnimSetFloat += _myAnimator.SetFloat;
 	}
 	private void Update(){
 		Walk();
@@ -53,6 +60,7 @@ public class PlayerMovement : MonoBehaviour {
 		if(!_jumped && Input.GetButtonDown("Jump") && IsGrounded())
 		{
 			_myRB2D.AddForce(Vector2.up * _jumpMinForce);
+			AnimSetBool("jumping", true);
 			_jumped = true;
 			_jumpStartTime = Time.time;
 		}
@@ -64,11 +72,15 @@ public class PlayerMovement : MonoBehaviour {
 		{
 			_jumped = false;
 			_jumpHeadHit = false;
+			AnimSetBool("jumping", false);
 		}
 	}
 	private bool IsGrounded(){
-		RaycastHit2D hit = Physics2D.CircleCast(_floorDetection.position,_circleCastRadius,Vector2.down,_circleCastRadius,1<<LayerMask.NameToLayer("Ground"));
-		if(hit.collider != null){
+		RaycastHit2D hit_a = Physics2D.Raycast(floorDetection.position - Vector3.right*0.2f, Vector2.down, .2f, 1<<LayerMask.NameToLayer("Ground"));
+		RaycastHit2D hit_b = Physics2D.Raycast(floorDetection.position + Vector3.right*0.2f, Vector2.down, .2f, 1<<LayerMask.NameToLayer("Ground"));
+		RaycastHit2D hit_e_a = Physics2D.Raycast(floorDetection.position - Vector3.right*0.2f, Vector2.down, .2f, 1<<LayerMask.NameToLayer("EffectorGround"));
+		RaycastHit2D hit_e_b = Physics2D.Raycast(floorDetection.position + Vector3.right*0.2f, Vector2.down, .2f, 1<<LayerMask.NameToLayer("EffectorGround"));
+		if(hit_a.collider != null || hit_b.collider != null || hit_e_a.collider != null || hit_e_b.collider != null){
 			return true;
 		}
 		return false;
@@ -86,11 +98,13 @@ public class PlayerMovement : MonoBehaviour {
 			_myRB2D.gravityScale = _gravityScale;
 			_myRB2D.constraints = RigidbodyConstraints2D.None;
 			_myRB2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+			AnimSetBool("climbing", false);
 		}
 		if(climbing){
-			_myRB2D.AddForce(Vector2.up*Input.GetAxisRaw("Vertical")*_walkingVelocity);
+			_myRB2D.AddForce(Vector2.up*Input.GetAxisRaw("Vertical")*_walkingVelocity/2);
 			_myRB2D.gravityScale = 0;
 			_myRB2D.constraints = RigidbodyConstraints2D.FreezePositionX;
+			AnimSetBool("climbing", true);
 		}
 	}
 	public void SetClimbing(bool value){
@@ -109,10 +123,10 @@ public class PlayerMovement : MonoBehaviour {
 		_myRB2D.AddForce(direction*_walkingVelocity);
 
 		if(horz != 0) {
-			_myAnimator.SetFloat("direction",horz);
-			_myAnimator.SetBool("moving",true);
+			AnimSetFloat("direction", horz);
+			AnimSetBool("moving", true);
 		}else{
-			_myAnimator.SetBool("moving",false);
+			AnimSetBool("moving", false);
 		}
 
 		//if((horz < 0 && _facingRight) || (horz > 0 && !_facingRight))

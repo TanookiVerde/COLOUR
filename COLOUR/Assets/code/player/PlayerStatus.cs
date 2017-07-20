@@ -14,6 +14,9 @@ public class PlayerStatus : MonoBehaviour {
 	public void Damage(Vector2 direction){
 		life--;
 		myRB2D.AddForce(-direction*knockBackIntensity);
+		if(life == 0){
+			StartCoroutine( GameOver() );
+		}
 	}
 	private void OnCollisionEnter2D(Collision2D other){	
 		if(other.gameObject.GetComponent<IObstacle>() != null){
@@ -26,5 +29,9 @@ public class PlayerStatus : MonoBehaviour {
 			other.gameObject.GetComponent<Ladder>().Interact(this.gameObject);
 			
 		}
+	}
+	private IEnumerator GameOver(){
+		yield return new WaitForEndOfFrame();
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("_main");
 	}
 }

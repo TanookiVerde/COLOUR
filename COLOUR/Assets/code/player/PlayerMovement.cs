@@ -24,12 +24,17 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] private float _jumpThreshold;
 
 	private Rigidbody2D _myRB2D;
+	private Animator _myAnimator;
+	private SpriteRenderer _mySR;
 	private bool _jumped = false;
 	private float _jumpStartTime;
 	public bool climbing;
 
 	private void Start(){
+		GetAnimator();
+		GetSpriteRenderer();
 		InitializePhysicsProperties();
+		StartCoroutine( AppearInStage() );
 	}
 	private void Update(){
 		Walk();
@@ -103,7 +108,30 @@ public class PlayerMovement : MonoBehaviour {
 		Vector2 direction = new Vector2(horz, 0).normalized;
 		_myRB2D.AddForce(direction*_walkingVelocity);
 
-		if((horz < 0 && _facingRight) || (horz > 0 && !_facingRight))
-		Flip();
+		if(horz != 0) {
+			_myAnimator.SetFloat("direction",horz);
+			_myAnimator.SetBool("moving",true);
+		}else{
+			_myAnimator.SetBool("moving",false);
+		}
+
+		//if((horz < 0 && _facingRight) || (horz > 0 && !_facingRight))
+		//Flip();
+	}
+	private void GetAnimator(){
+		_myAnimator = GetComponent<Animator>();
+	}
+	private void GetSpriteRenderer(){
+		_mySR = GetComponent<SpriteRenderer>();
+	}
+	private IEnumerator AppearInStage(){
+		float opacity = 0;
+		_mySR.color = new Color(_mySR.color.r,_mySR.color.g,_mySR.color.b,0);
+
+		while(!Mathf.Approximately(opacity,1)){
+			opacity = Mathf.Lerp(opacity,1,0.05f);
+			_mySR.color = new Color(_mySR.color.r,_mySR.color.g,_mySR.color.b,opacity);
+			yield return new WaitForEndOfFrame();
+		}
 	}
 }

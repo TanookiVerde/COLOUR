@@ -22,6 +22,7 @@ public class MenuStructure : MonoBehaviour {
 	[SerializeField] private Transform _menuFinal;
 
 	private void Start(){
+		_imageComponent.preserveAspect = true;
 		StartCoroutine( CutsceneStart() );
 	}
 	private IEnumerator CutsceneStart(){

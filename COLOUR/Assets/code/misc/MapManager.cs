@@ -18,7 +18,12 @@ public class MapManager : MonoBehaviour {
 	[SerializeField] private Transform _greenSpawner;
 	[SerializeField] private Transform _blueSpawner;
 
-	private int[] _mapSections;
+    [Header("Colors")]
+    [SerializeField] private Color _red;
+    [SerializeField] private Color _blue;
+    [SerializeField] private Color _green;
+
+    private int[] _mapSections;
 
 	void Start () {
 		_mapSections = ChooseSections();
@@ -65,9 +70,6 @@ public class MapManager : MonoBehaviour {
 	void Colorize(GameObject s)
 	{
 		SpriteRenderer[] platforms = s.GetComponentsInChildren<SpriteRenderer>();
-		List<SpriteRenderer> rp = new List<SpriteRenderer>();
-		List<SpriteRenderer> gp = new List<SpriteRenderer>();
-		List<SpriteRenderer> bp = new List<SpriteRenderer>();
 		foreach(SpriteRenderer sr in platforms)
 		{
 			if(sr.tag == "Black")
@@ -80,13 +82,13 @@ public class MapManager : MonoBehaviour {
 				switch(clr)
 				{
 					case COLOR.RED:
-						sr.color = Color.red;
+						sr.color = _red;
 						break;
 					case COLOR.GREEN:
-						sr.color = Color.green;
+						sr.color = _green;
 						break;
 					case COLOR.BLUE:
-						sr.color = Color.blue;
+						sr.color = _blue;
 						break;
 				}
 			}
@@ -104,8 +106,12 @@ public class MapManager : MonoBehaviour {
 			//red 	(1, 0, 0, 1) -> k = 0
 			//green (0, 1, 0, 1) -> k = 1
 			//blue 	(0, 0, 1, 1) -> k = 2
-			float k = Vector4.Dot((Vector4) sr.color, new Vector4(1, 2, 3, 0)) - 1;
-			if(k >= 0) clr = (COLOR) k;
+			int k = (int) Vector4.Dot((Vector4) sr.color, new Vector4(1, 2, 3, 0));
+
+            Debug.Log("color: " + sr.color + ", k: " + k + ", COLOR: " + (COLOR) k);
+            //continue;
+
+			if(k < 3) clr = (COLOR) k;
 			else continue;
 
 			if(clr == c)

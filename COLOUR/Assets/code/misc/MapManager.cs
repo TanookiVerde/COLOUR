@@ -17,6 +17,7 @@ public class MapManager : MonoBehaviour {
 	[SerializeField] private Transform _redSpawner;
 	[SerializeField] private Transform _greenSpawner;
 	[SerializeField] private Transform _blueSpawner;
+    [SerializeField] private GameObject _walls;
 
     [Header("Colors")]
     [SerializeField] private Color _red;
@@ -52,6 +53,8 @@ public class MapManager : MonoBehaviour {
 			GameObject prefab = _sectionsPrefabs[_mapSections[i]];
 
 			GameObject redSection = (GameObject) Instantiate(prefab, _redSpawner.position + offset, Quaternion.identity, transform);
+
+            Instantiate(_walls, _walls.transform.position + offset, Quaternion.identity);
 
 			//It was coloring the prefab instead of the GameObject, it was suposed to color a copy of it, 
 			//and to all be colored the same way the redSection is passed as original object on Instantiate
